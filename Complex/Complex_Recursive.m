@@ -99,6 +99,8 @@ else
         case 'StoerWagner'
             [Z_MIP, phi_MIP] = mincut( probs.g );
             Z_MIP = Z_MIP + 1;
+        case 'HaoOrlin'
+            [Z_MIP, phi_MIP] = hao_orlin_mincut( probs.g );    
     end
     
     indices_L = find(Z_MIP==1);
