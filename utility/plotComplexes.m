@@ -147,7 +147,7 @@ else
 end
 
 switch plotType
-    case {'2D', 'BirdsEye'}
+    case {'2D', 'BirdsEye', '2D_parsimonious'}
         if ~(isX && isY)
             if isGraph
                 f = figure;
@@ -177,15 +177,31 @@ nComplexes = length(phis);
 [phis_sorted, index_phis_sorted] = sort(phis, 'ascend');
 complexes_sorted = complexes(index_phis_sorted);
 
-adjComps = zeros(nNodes);
+adjComps_all = zeros(nNodes);
 indices_all = [];
 for iComplexes = 1:nComplexes
     indices_temp = complexes_sorted{iComplexes};
-    adjComps(indices_temp, indices_temp) = adjG(indices_temp, indices_temp);
+    adjComps_all(indices_temp, indices_temp) = adjG(indices_temp, indices_temp);
     indices_all = union(indices_all, indices_temp);
 end
-GComps = graph(adjComps);
+if issymmetric(adjComps_all)
+    GComps = graph(adjComps_all);
+else
+    GComps = digraph(adjComps_all);
+end
 
+edges_upper_union = [];
+edges_upper = cell(nComplexes, 1);
+for iComplexes = nComplexes:-1:1
+    edges_upper{iComplexes} = edges_upper_union;
+    
+    indices_temp = complexes_sorted{iComplexes};
+    [x,y] = meshgrid(indices_temp, indices_temp);
+    x = x(:); y = y(:);
+    edges_temp = nonzeros(findedge(GComps, x, y));
+    edges_upper_union = union(edges_upper_union, edges_temp);
+    
+end
 
 %% Setting colors
 if ~isCLim
@@ -218,7 +234,11 @@ switch plotType
             indices_temp = complexes_sorted{iComplexes};
             G_temp = zeros(nNodes);
             G_temp(indices_temp, indices_temp) = adjG(indices_temp, indices_temp);
-            G_temp = graph(G_temp);
+            if issymmetric(G_temp)
+                G_temp = graph(G_temp);
+            else
+                G_temp = digraph(G_temp);
+            end
             G_temp = subgraph(G_temp, indices_all);
             highlight(cax.Children(1), G_temp, 'NodeColor', colors(iComplexes,:), ...
                 'EdgeColor', colors(iComplexes,:));
@@ -244,6 +264,24 @@ switch plotType
                     'YData',YData(indices_temp), ...
                     'ZData',ZData_temp, subGPlotProps_temp{:} );
         end
+    case {'2D_parsimonious'}
+        [G_WithAttribute, GPlotProps_attributed, GPlotProps_remaining] = addGraphPlotProperties2G(GComps, args{:});
+        
+        for iComplexes = 1:nComplexes
+            idx_temp = complexes_sorted{iComplexes};
+            G_temp = rmedge(G_WithAttribute, edges_upper{iComplexes});
+            G_temp = subgraph(G_temp, idx_temp);
+            
+            subGPlotProps_temp = getGraphPlotPropertiesFromG(G_temp, GPlotProps_attributed{:});
+
+            hObj(iComplexes) = ...
+                plot(cax, G_temp, 'Parent', parent,...
+                'NodeColor', colors(iComplexes,:), ...
+                'EdgeColor', colors(iComplexes,:), ...
+                'XData',XData(idx_temp),...
+                'YData',YData(idx_temp), ...
+                subGPlotProps_temp{:}, GPlotProps_remaining{:} );
+        end        
 end
 
 switch plotType
@@ -300,9 +338,11 @@ GPlotProps = varargin(3:end);
 
 subGEdgeIndices = [];
 for iIndices = 1:length(indices)
-    idxOut = findedge(G, indices(iIndices), indices(iIndices:end));
+    %idxOut = findedge(G, indices(iIndices), indices(iIndices:end));
+    idxOut = findedge(G, indices(iIndices), indices);
     subGEdgeIndices = [subGEdgeIndices; nonzeros(idxOut)];
 end
+subGEdgeIndices = unique(subGEdgeIndices);
 
 subGPlotProps = cell(size(GPlotProps));
 for i = 1:2:length(GPlotProps)
@@ -330,3 +370,95 @@ for i = 1:2:length(GPlotProps)
 end
 
 end
+
+function [G_WithAttribute, GPlotProps_attributed, GPlotProps_remaining] = addGraphPlotProperties2G(varargin)
+
+G_WithAttribute = varargin{1};
+GPlotProps = varargin(2:end);
+
+GPlotProps_attributed = cell(0);
+GPlotProps_remaining = cell(0);
+
+for i = 1:2:length(GPlotProps)
+    
+    if size(GPlotProps{i+1}) > 1 % Color, ()*3 mat
+        if startsWith(GPlotProps{i}, 'Node', 'IgnoreCase', true) % Nodes
+            eval(['G_WithAttribute.Nodes.',GPlotProps{i}, ' = GPlotProps{i+1};'])
+        elseif startsWith(GPlotProps{i}, 'Edge', 'IgnoreCase', true) % Edges
+            eval(['G_WithAttribute.Edges.',GPlotProps{i}, ' = GPlotProps{i+1};'])
+        end
+        GPlotProps_attributed = [GPlotProps_attributed, GPlotProps(i), GPlotProps(i+1)];
+    elseif length(GPlotProps{i+1}) > 1 && ~isa(GPlotProps{i+1}, 'char') % vec other than char or callbacks
+        if startsWith(GPlotProps{i}, 'Node') || startsWith(GPlotProps{i}, 'Marker') % Nodes
+            eval(['G_WithAttribute.Nodes.',GPlotProps{i}, ' = GPlotProps{i+1};'])
+        elseif startsWith(GPlotProps{i}, 'Edge', 'IgnoreCase', true) || ...
+                startsWith(GPlotProps{i}, 'Line', 'IgnoreCase', true) || ...
+                startsWith(GPlotProps{i}, 'Arrows', 'IgnoreCase', true) % Edges
+            eval(['G_WithAttribute.Edges.',GPlotProps{i}, ' = GPlotProps{i+1};'])
+        end
+        GPlotProps_attributed = [GPlotProps_attributed, GPlotProps(i), GPlotProps(i+1)];
+    else
+        GPlotProps_remaining = [GPlotProps_remaining, GPlotProps(i), GPlotProps(i+1)];
+    end
+end
+
+end
+
+function GPlotProps = getGraphPlotPropertiesFromG(varargin)
+
+G_WithAttribute = varargin{1};
+GPlotProps_attributed = varargin(2:end);
+
+GPlotProps = GPlotProps_attributed;
+for i = 1:2:length(GPlotProps_attributed)
+    if size(GPlotProps{i+1}) > 1 % Color, ()*3 mat
+        if startsWith(GPlotProps{i}, 'Node', 'IgnoreCase', true) % Nodes
+            eval(['GPlotProps{i+1} = G_WithAttribute.Nodes.', GPlotProps{i}, ';'])
+        elseif startsWith(GPlotProps{i}, 'Edge', 'IgnoreCase', true) % Edges
+            eval(['GPlotProps{i+1} = G_WithAttribute.Edges.', GPlotProps{i}, ';'])
+        end
+    elseif length(GPlotProps{i+1}) > 1 && ~isa(GPlotProps{i+1}, 'char') % vec other than char or callbacks
+        if startsWith(GPlotProps{i}, 'Node') || startsWith(GPlotProps{i}, 'Marker') % Nodes
+            eval(['GPlotProps{i+1} = G_WithAttribute.Nodes.', GPlotProps{i}, ';'])
+        elseif startsWith(GPlotProps{i}, 'Edge', 'IgnoreCase', true) || ...
+                startsWith(GPlotProps{i}, 'Line', 'IgnoreCase', true) || ...
+                startsWith(GPlotProps{i}, 'Arrows', 'IgnoreCase', true) % Edges
+            eval(['GPlotProps{i+1} = G_WithAttribute.Edges.', GPlotProps{i}, ';'])
+        end
+    end
+end
+
+end
+
+% function GPlotProps_ordered = reorderGraphPlotProperties(varargin)
+% 
+% nodeOrder = varargin{1};
+% edgeOrder = varargin{2};
+% GPlotProps = varargin(3:end);
+% 
+% GPlotProps_ordered = cell(size(GPlotProps));
+% for i = 1:2:length(GPlotProps)
+%     
+%     GPlotProps_ordered{i} = GPlotProps{i};
+%     
+%     if size(GPlotProps{i+1}) > 1 % Color, ()*3 mat
+%         if startsWith(GPlotProps{i}, 'Node', 'IgnoreCase', true) % Nodes
+%             GPlotProps_ordered{i+1} = GPlotProps{i+1}(nodeOrder,:);
+%         elseif startsWith(GPlotProps{i}, 'Edge', 'IgnoreCase', true) % Edges
+%             GPlotProps_ordered{i+1} = GPlotProps{i+1}(edgeOrder,:);
+%         end
+%     elseif length(GPlotProps{i+1}) > 1 && ~isa(GPlotProps{i+1}, 'char') % vec other than char or callbacks
+%         if startsWith(GPlotProps{i}, 'Node') || startsWith(GPlotProps{i}, 'Marker') % Nodes
+%             GPlotProps_ordered{i+1} = GPlotProps{i+1}(nodeOrder);
+%         elseif startsWith(GPlotProps{i}, 'Edge', 'IgnoreCase', true) || ...
+%                 startsWith(GPlotProps{i}, 'Line', 'IgnoreCase', true) || ...
+%                 startsWith(GPlotProps{i}, 'Arrows', 'IgnoreCase', true) % Edges
+%             GPlotProps_ordered{i+1} = GPlotProps{i+1}(edgeOrder);
+%         end
+%     else
+%         GPlotProps_ordered{i+1} = GPlotProps{i+1};
+%     end
+%         
+% end
+% 
+% end
