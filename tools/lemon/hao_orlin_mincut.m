@@ -7,7 +7,7 @@ function [Z_MIP, phi_MIP] = hao_orlin_mincut(g)
 %               of the edge connecting nodes i,j.
 % 
 % OUTPUTS:
-%       Z_MIP   the estimated MIP
+%       Z_MIP   the estimated MIP(grouped into 1 and 2)
 %       
 %       phi_MIP the value of mincut of the graph which corresponds to 
 %               integrated information at the MIP
@@ -15,7 +15,7 @@ function [Z_MIP, phi_MIP] = hao_orlin_mincut(g)
 % EXAMPLE:
 %       test_data = [0 0.2 0.5; 0.2 0 0; 0.5 0.1 0]; %give an adjacent
 %       matrix
-%       [Z_MIP, phi_MIP] = hao_orlin_mincut(g);
+%       [Z_MIP, phi_MIP] = hao_orlin_mincut(test_data);
 %       
 %   result:
 %       Z_MIP = [2 1 2], phi_MIP = 0.2000
