@@ -16,9 +16,9 @@ bioRxiv 2021.07.12.452022.
 
 
 ## Getting Started
-Add path to the toolbox
-`addpath(genpath('THE_FOLDER_WHERE_THE_TOOLBOX_IS/BidirectionallyConnectedCores')`
-and then, you can use the method easily as follows:</br>
+Add path to the toolbox:</br>
+`addpath(genpath('THE_FOLDER_WHERE_THE_TOOLBOX_IS/BidirectionallyConnectedCores'))`</br>
+and then, you can use the method easily:</br>
 `[complexes, w_mc_complexes, main_complexes, w_mc_main_complexes, Res] = HPC( W );`</br>
 where _W_ is a connection matrix. 
 
