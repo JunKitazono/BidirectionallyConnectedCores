@@ -30,7 +30,7 @@ function [Z_MIP, phi_MIP] = nagamochi_ibaraki(g)
 %       this function uses open source library called LEMON
 %       compile nagamochi_ibaraki_c.cpp file by following command at the
 %       proper directory
-%       mex PhiToolbox/tools/lemon/nagamochi_ibaraki_c.cpp -I/usr/local/include/ -L/usr/local/lib/ -lemon
+%       mex BidirectionallyConnectedCores/tools/lemon/nagamochi_ibaraki_c.cpp -I/usr/local/include/ -L/usr/local/lib/ -lemon
 %       You must install lemon library to your local environment
 % 
 % Yuma Aoki, 2020

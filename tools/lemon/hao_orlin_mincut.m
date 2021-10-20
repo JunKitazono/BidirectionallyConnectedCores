@@ -29,7 +29,7 @@ function [Z_MIP, phi_MIP] = hao_orlin_mincut(g)
 %       this function uses open source library called LEMON
 %       compile hao_orlin_mincut.cpp file by following command at the
 %       proper directory
-%       mex PhiToolbox/tools/lemon/hao_orlin_mincut_c.cpp -I/usr/local/include/ -L/usr/local/lib/ -lemon
+%       mex BidirectionallyConnectedCores/tools/lemon/hao_orlin_mincut_c.cpp -I/usr/local/include/ -L/usr/local/lib/ -lemon
 %       You must install lemon library to your local environment
 % 
 % Yuma Aoki, 2019
