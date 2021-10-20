@@ -21,13 +21,15 @@ function [Z_MIP, phi_MIP] = hao_orlin_mincut(g)
 %       Z_MIP = [2 1 2], phi_MIP = 0.2000
 %       means the graph was split to two groups: {1,3}, {2}
 %       minimum cut weight value is 0.2000
+%
 % Complexity:
 %       O(|V|^2 * sqrt(|E|))
+%
 % USAGE:
 %       this function uses open source library called LEMON
 %       compile hao_orlin_mincut.cpp file by following command at the
 %       proper directory
-%       mex PhiToolbox/tools/lemon/hao_orlin_mincut_c.cpp -I/usr/local/include/ -L/usr/local/lib/ -lemon
+%       mex BidirectionallyConnectedCores/tools/lemon/hao_orlin_mincut_c.cpp -I/usr/local/include/ -L/usr/local/lib/ -lemon
 %       You must install lemon library to your local environment
 % 
 % Yuma Aoki, 2019

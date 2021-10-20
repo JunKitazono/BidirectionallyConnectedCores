@@ -22,13 +22,15 @@ function [Z_MIP, phi_MIP] = nagamochi_ibaraki(g)
 %       Z_MIP = [2 1 2], phi_MIP = 0.3000
 %       means the graph was split to two groups: {1,3}, {2}
 %       minimum cut weight value is 0.3000
+%
 % Complexity:
 %       O(|V||E|log(|V|))
+%
 % USAGE:
 %       this function uses open source library called LEMON
 %       compile nagamochi_ibaraki_c.cpp file by following command at the
 %       proper directory
-%       mex PhiToolbox/tools/lemon/nagamochi_ibaraki_c.cpp -I/usr/local/include/ -L/usr/local/lib/ -lemon
+%       mex BidirectionallyConnectedCores/tools/lemon/nagamochi_ibaraki_c.cpp -I/usr/local/include/ -L/usr/local/lib/ -lemon
 %       You must install lemon library to your local environment
 % 
 % Yuma Aoki, 2020
