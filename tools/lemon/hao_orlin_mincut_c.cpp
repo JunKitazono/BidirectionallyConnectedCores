@@ -32,7 +32,6 @@ using matlab::data::ArrayFactory;
 using namespace lemon;
 using namespace std;
 
-        
 
 class MexFunction : public matlab::mex::Function {
 public:
@@ -43,7 +42,6 @@ public:
         typedef double Value;
         typedef FullDigraph::Node Node;
         ArrayFactory factory;
-        
         
         matlab::data::TypedArray<double> input_array = std::move(inputs[0]);
 //         get array size

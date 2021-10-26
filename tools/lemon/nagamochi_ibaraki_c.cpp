@@ -43,7 +43,6 @@ public:
         typedef FullGraph::Node Node;
         ArrayFactory factory;
         
-        
         matlab::data::TypedArray<double> input_array = std::move(inputs[0]);
 //         get array size
         int size = (int)sqrt((double)input_array.getNumberOfElements());
