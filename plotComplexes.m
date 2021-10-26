@@ -169,7 +169,7 @@ switch plotType
 end
 
 args = InsertDefault2Args(args, 'EdgeAlpha', 1);
-args = InsertDefault2Args(args, 'NodeLabel', 1:nNodes);
+args = InsertDefault2Args(args, 'NodeLabel', (1:nNodes)');
 
 
 nComplexes = length(w_mc);
