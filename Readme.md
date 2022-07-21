@@ -11,9 +11,7 @@ You can freely use this toolbox at your own risk. Comments, bug reports, and pro
 
 ### Citation
 If you use this toolbox, please read and cite the following paper: </br>
-- J. Kitazono, Y. Aoki, M. Oizumi. (2022, in press). Bidirectionally connected cores in a mouse connectome: Towards extracting the brain subnetworks essential for consciousness. *Cerebral Cortex*.
-- A preprint version is here: [bioRxiv 2021.07.12.452022](https://doi.org/10.1101/2021.07.12.452022).
- 
+- [J. Kitazono, Y. Aoki, M. Oizumi. (2022). Bidirectionally connected cores in a mouse connectome: Towards extracting the brain subnetworks essential for consciousness. *Cerebral Cortex*.](https://academic.oup.com/cercor/article-lookup/doi/10.1093/cercor/bhac143)
 
 
 ## Getting Started
