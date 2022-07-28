@@ -1,4 +1,4 @@
-%% Extract complexes from a toy network (Fig. 6 in Kitazono et al., 2021).
+%% Extract complexes from a toy network (Fig. 7 in Kitazono et al., 2022).
 % If you set type_of_mat = 1, bidirectionality will be considered and 
 % if you set type_of_mat = 2, bidirectionality will be ignored.
 
@@ -20,7 +20,7 @@ end
 % Extract complexes
 [complexes, w_mc_complexes, main_complexes, w_mc_main_complexes, Res] = HPC( W );
 
-% Sort indices accotding to the hierarchical structure of complexes (See Fig. 5 in Kitazono et al., 2021)
+% Sort indices accotding to the hierarchical structure of complexes (See Fig. 6 in Kitazono et al., 2022)
 [~, indices_sorted] = sortIndicesAccordingToHierarchicalStructure(Res);
 
 
